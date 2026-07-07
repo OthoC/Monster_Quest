@@ -11,6 +11,8 @@ public class Jugador {
     private int dinero;
     private int victorias;
 
+    
+
     // Bloque de instancia
     {
         equipo = new Criatura[6];

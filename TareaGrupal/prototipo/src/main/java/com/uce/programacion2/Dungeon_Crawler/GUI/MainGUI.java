@@ -1,10 +1,8 @@
-package com.uce.programacion2.Dungeon_Crawler.Principal;
+package com.uce.programacion2.Dungeon_Crawler.GUI;
 
 import javax.swing.SwingUtilities;
 
-import com.uce.programacion2.Dungeon_Crawler.GUI.VentanaPrincipal;
-
-public class Main {
+public class MainGUI {
 
     public static void main(String[] args) {
 

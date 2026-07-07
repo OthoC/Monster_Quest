@@ -3,9 +3,9 @@ package com.uce.programacion2.Dungeon_Crawler.Mapa;
 import com.uce.programacion2.Dungeon_Crawler.Criaturas.Aquos;
 import com.uce.programacion2.Dungeon_Crawler.Criaturas.Criatura;
 import com.uce.programacion2.Dungeon_Crawler.Criaturas.Floran;
-import com.uce.programacion2.Dungeon_Crawler.Criaturas.Voltix;
-import com.uce.programacion2.Dungeon_Crawler.Criaturas.Umbrix;
 import com.uce.programacion2.Dungeon_Crawler.Criaturas.Pyron;
+import com.uce.programacion2.Dungeon_Crawler.Criaturas.Umbrix;
+import com.uce.programacion2.Dungeon_Crawler.Criaturas.Voltix;
 
 public class Mundo {
 
@@ -24,7 +24,7 @@ public class Mundo {
 
         regiones[0][0] = new Ruta(
                 "Bosque Verde",
-                new Criatura[] {
+                new Criatura[]{
                         new Floran(),
                         new Floran(),
                         new Pyron()
@@ -32,7 +32,7 @@ public class Mundo {
 
         regiones[0][1] = new Ruta(
                 "Lago Cristal",
-                new Criatura[] {
+                new Criatura[]{
                         new Aquos(),
                         new Aquos(),
                         new Voltix()
@@ -46,7 +46,7 @@ public class Mundo {
 
         regiones[1][0] = new Ruta(
                 "Cueva Oscura",
-                new Criatura[] {
+                new Criatura[]{
                         new Umbrix(),
                         new Voltix(),
                         new Pyron()
@@ -60,7 +60,7 @@ public class Mundo {
 
         regiones[2][0] = new Ruta(
                 "Volcán Rojo",
-                new Criatura[] {
+                new Criatura[]{
                         new Pyron(),
                         new Pyron(),
                         new Umbrix()
@@ -68,7 +68,7 @@ public class Mundo {
 
         regiones[2][1] = new Ruta(
                 "Ruinas Antiguas",
-                new Criatura[] {
+                new Criatura[]{
                         new Umbrix(),
                         new Floran(),
                         new Voltix()
@@ -76,7 +76,7 @@ public class Mundo {
 
         regiones[2][2] = new Ruta(
                 "Pantano Tóxico",
-                new Criatura[] {
+                new Criatura[]{
                         new Aquos(),
                         new Umbrix(),
                         new Floran()
@@ -86,29 +86,37 @@ public class Mundo {
 
     public Ruta obtenerRuta(int region, int ruta) {
 
-        if (region < 0 || region >= regiones.length) {
+        if (region < 0 || region >= regiones.length)
             return null;
-        }
 
-        if (ruta < 0 || ruta >= regiones[region].length) {
+        if (ruta < 0 || ruta >= regiones[region].length)
             return null;
-        }
 
         return regiones[region][ruta];
 
     }
 
     public int getCantidadRegiones() {
+
         return regiones.length;
+
     }
 
     public int getCantidadRutas(int region) {
 
-        if (region < 0 || region >= regiones.length) {
+        if (region < 0 || region >= regiones.length)
             return 0;
-        }
 
         return regiones[region].length;
+
+    }
+
+    /**
+     * Método agregado para la interfaz gráfica.
+     */
+    public Ruta[][] getRegiones() {
+
+        return regiones;
 
     }
 
@@ -122,8 +130,7 @@ public class Mundo {
 
             for (int j = 0; j < regiones[i].length; j++) {
 
-                System.out.println((j + 1) + ". "
-                        + regiones[i][j].getNombre());
+                System.out.println((j + 1) + ". " + regiones[i][j].getNombre());
 
             }
 

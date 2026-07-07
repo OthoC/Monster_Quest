@@ -1,124 +1,85 @@
 package com.uce.programacion2.Dungeon_Crawler.Battle;
 
-import java.util.Scanner;
 import com.uce.programacion2.Dungeon_Crawler.Criaturas.Criatura;
 import com.uce.programacion2.Dungeon_Crawler.Objetos.Esfera;
 import com.uce.programacion2.Dungeon_Crawler.Objetos.Pocion;
 import com.uce.programacion2.Dungeon_Crawler.Personajes.Jugador;
 
-
 public class Batalla {
 
     private Jugador jugador;
+    private Criatura aliado;
     private Criatura salvaje;
-    private Scanner teclado;
 
-    {
-        teclado = new Scanner(System.in);
-    }
+    private boolean terminada;
+    private boolean victoria;
 
     public Batalla(Jugador jugador, Criatura salvaje) {
 
         this.jugador = jugador;
         this.salvaje = salvaje;
+        this.aliado = jugador.obtenerPrimeraCriatura();
+
+        terminada = false;
+        victoria = false;
 
     }
 
-    public void iniciar() {
+    //===========================
+    // GETTERS
+    //===========================
 
-        Criatura aliado = jugador.obtenerPrimeraCriatura();
+    public Jugador getJugador() {
+        return jugador;
+    }
 
-        if (aliado == null) {
+    public Criatura getAliado() {
+        return aliado;
+    }
 
-            System.out.println("No tienes criaturas para combatir.");
-            return;
+    public Criatura getSalvaje() {
+        return salvaje;
+    }
+
+    public boolean batallaTerminada() {
+        return terminada;
+    }
+
+    public boolean jugadorGano() {
+        return victoria;
+    }
+
+    //===========================
+    // MÉTODOS AUXILIARES
+    //===========================
+
+    private void verificarEstado() {
+
+        if (!salvaje.estaVivo()) {
+
+            victoria = true;
+            terminada = true;
+
+            aliado.ganarExperiencia(40);
+
+            jugador.agregarDinero(25);
+
+            jugador.sumarVictoria();
 
         }
 
-        int opcion;
+        if (!aliado.estaVivo()) {
 
-        do {
+            victoria = false;
+            terminada = true;
 
-            System.out.println("\n==============================");
-            System.out.println("        COMBATE");
-            System.out.println("==============================");
-
-            mostrarEstado(aliado);
-            mostrarEstado(salvaje);
-
-            System.out.println();
-            System.out.println("1. Atacar");
-            System.out.println("2. Usar poción");
-            System.out.println("3. Lanzar esfera");
-            System.out.println("4. Huir");
-
-            System.out.print("Opción: ");
-
-            opcion = teclado.nextInt();
-
-            switch (opcion) {
-
-                case 1:
-
-                    turnoAtaque(aliado);
-
-                    break;
-
-                case 2:
-
-                    usarPocion(aliado);
-
-                    break;
-
-                case 3:
-
-                    lanzarEsfera();
-
-                    if (!salvaje.estaVivo()) {
-                        return;
-                    }
-
-                    break;
-
-                case 4:
-
-                    System.out.println("Has huido.");
-
-                    return;
-
-                default:
-
-                    System.out.println("Opción inválida.");
-
-            }
-
-            if (!salvaje.estaVivo()) {
-
-                System.out.println();
-
-                System.out.println("¡Has ganado el combate!");
-
-                aliado.ganarExperiencia(40);
-
-                jugador.agregarDinero(25);
-
-                jugador.sumarVictoria();
-
-                return;
-
-            }
-
-        } while (aliado.estaVivo());
-
-        System.out.println("Tu criatura fue derrotada.");
+        }
 
     }
 
-    private void turnoAtaque(Criatura aliado) {
+    protected void turnoEnemigo() {
 
-        aliado.atacar(salvaje);
-
-        if (salvaje.estaVivo()) {
+        if (salvaje.estaVivo() && aliado.estaVivo()) {
 
             salvaje.atacar(aliado);
 
@@ -126,47 +87,211 @@ public class Batalla {
 
     }
 
-    private void usarPocion(Criatura aliado) {
+        //===========================
+    // ATAQUE NORMAL
+    //===========================
+
+    public String atacar() {
+
+        if (terminada) {
+            return "La batalla ya terminó.";
+        }
+
+        StringBuilder resultado = new StringBuilder();
+
+        // Ataque del jugador
+        resultado.append(aliado.getNombre())
+                 .append(" atacó a ")
+                 .append(salvaje.getNombre())
+                 .append(".\n");
+
+        aliado.atacar(salvaje);
+
+        // Si el enemigo sigue vivo, contraataca
+        if (salvaje.estaVivo()) {
+
+            resultado.append(salvaje.getNombre())
+                     .append(" contraatacó.\n");
+
+            salvaje.atacar(aliado);
+
+        }
+
+        verificarEstado();
+
+        if (terminada) {
+
+            if (victoria) {
+
+                resultado.append("\n¡Has ganado la batalla!");
+
+            } else {
+
+                resultado.append("\nHas sido derrotado.");
+
+            }
+
+        }
+
+        return resultado.toString();
+
+    }
+
+    //===========================
+    // ATAQUE ESPECIAL
+    //===========================
+
+    public String usarAtaqueEspecial() {
+
+        if (terminada) {
+            return "La batalla ya terminó.";
+        }
+
+        StringBuilder resultado = new StringBuilder();
+
+        int danio = aliado.getAtaque() + 20;
+
+        resultado.append(aliado.getNombre())
+                 .append(" lanzó un ataque especial.\n");
+
+        salvaje.recibirDanio(danio);
+
+        if (salvaje.estaVivo()) {
+
+            resultado.append(salvaje.getNombre())
+                     .append(" contraatacó.\n");
+
+            salvaje.atacar(aliado);
+
+        }
+
+        verificarEstado();
+
+        if (terminada) {
+
+            if (victoria) {
+
+                resultado.append("\n¡Has ganado la batalla!");
+
+            } else {
+
+                resultado.append("\nHas sido derrotado.");
+
+            }
+
+        }
+
+        return resultado.toString();
+
+    }
+
+        //===========================
+    // USAR POCIÓN
+    //===========================
+
+    public String usarPocion() {
+
+        if (terminada) {
+            return "La batalla ya terminó.";
+        }
 
         Pocion pocion = new Pocion();
 
         pocion.usar(aliado);
 
+        StringBuilder resultado = new StringBuilder();
+
+        resultado.append(aliado.getNombre())
+                 .append(" recuperó vida.\n");
+
+        if (salvaje.estaVivo()) {
+
+            resultado.append(salvaje.getNombre())
+                     .append(" atacó.\n");
+
+            salvaje.atacar(aliado);
+
+        }
+
+        verificarEstado();
+
+        if (terminada) {
+
+            if (victoria) {
+
+                resultado.append("\n¡Has ganado la batalla!");
+
+            } else {
+
+                resultado.append("\nHas sido derrotado.");
+
+            }
+
+        }
+
+        return resultado.toString();
+
     }
 
-    private void lanzarEsfera() {
+    //===========================
+    // LANZAR ESFERA
+    //===========================
+
+    public String lanzarEsfera() {
+
+        if (terminada) {
+            return "La batalla ya terminó.";
+        }
 
         Esfera esfera = new Esfera();
 
         if (esfera.usar(salvaje)) {
 
-            System.out.println("¡Capturaste a " + salvaje.getNombre() + "!");
-
             jugador.agregarCriatura(salvaje);
 
             salvaje.setVida(0);
 
-        } else {
+            victoria = true;
 
-            System.out.println("La criatura escapó de la esfera.");
+            terminada = true;
+
+            return "¡Capturaste a " + salvaje.getNombre() + "!";
 
         }
 
+        StringBuilder resultado = new StringBuilder();
+
+        resultado.append("La criatura escapó de la esfera.\n");
+
+        if (salvaje.estaVivo()) {
+
+            salvaje.atacar(aliado);
+
+            resultado.append(salvaje.getNombre())
+                     .append(" contraatacó.");
+
+        }
+
+        verificarEstado();
+
+        return resultado.toString();
+
     }
 
-    private void mostrarEstado(Criatura criatura) {
+    //===========================
+    // HUIR
+    //===========================
 
-        System.out.println();
+    public String huir() {
 
-        System.out.println(criatura.getNombre());
+        terminada = true;
 
-        System.out.println("Nivel : " + criatura.getNivel());
+        victoria = false;
 
-        System.out.println("Vida  : "
-                + criatura.getVida()
-                + "/"
-                + criatura.getVidaMaxima());
+        return "Has huido del combate.";
 
     }
+
+    
 
 }

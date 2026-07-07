@@ -185,7 +185,8 @@ public class Juego {
 
         Batalla batalla = new Batalla(jugador, salvaje);
 
-        batalla.iniciar();
+        // En la versión Swing este objeto será enviado al PanelBatalla.
+        System.out.println("La batalla ha sido creada.");
 
     }
 
@@ -226,7 +227,8 @@ public class Juego {
 
         Batalla batalla = new Batalla(jugador, jefe);
 
-        batalla.iniciar();
+        // En Swing este objeto será enviado al PanelBatalla.
+        System.out.println("La batalla contra el jefe ha sido creada.");
 
     }
 
@@ -237,6 +239,97 @@ public class Juego {
         System.out.println("Dinero      : $" + jugador.getDinero());
         System.out.println("Victorias   : " + jugador.getVictorias());
         System.out.println("Criaturas   : " + jugador.getCantidadCriaturas());
+
+    }
+
+    // =========================
+    // MÉTODOS PARA LA GUI
+    // =========================
+
+    public void crearJugador(String nombre) {
+
+        jugador = new Jugador(nombre);
+
+    }
+
+    public Jugador getJugador() {
+
+        return jugador;
+
+    }
+
+    public Mundo getMundo() {
+
+        return mundo;
+
+    }
+
+    public boolean elegirInicialGUI(int opcion) {
+
+        if (jugador == null)
+            return false;
+
+        if (jugador.getCantidadCriaturas() > 0)
+            return false;
+
+        switch (opcion) {
+
+            case 1:
+                jugador.agregarCriatura(new Pyron());
+                break;
+
+            case 2:
+                jugador.agregarCriatura(new Aquos());
+                break;
+
+            case 3:
+                jugador.agregarCriatura(new Floran());
+                break;
+
+            default:
+                return false;
+
+        }
+
+        return true;
+
+    }
+
+    public Batalla crearBatalla(Ruta ruta) {
+
+        if (jugador == null || ruta == null)
+            return null;
+
+        return new Batalla(jugador, ruta.obtenerCriaturaAleatoria());
+
+    }
+
+    public Batalla crearBatallaJefe() {
+
+        if (jugador == null)
+            return null;
+
+        Criatura jefe = new Umbrix() {
+
+            @Override
+            public void atacar(Criatura enemigo) {
+
+                System.out.println(getNombre() + " usa ECLIPSE SUPREMO.");
+
+                enemigo.recibirDanio(getAtaque() + 40);
+
+            }
+
+            @Override
+            public void evolucionar() {
+
+                System.out.println(getNombre() + " ya alcanzó su forma definitiva.");
+
+            }
+
+        };
+
+        return new Batalla(jugador, jefe);
 
     }
 
