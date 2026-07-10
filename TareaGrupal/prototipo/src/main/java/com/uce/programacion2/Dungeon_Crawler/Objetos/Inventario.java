@@ -63,6 +63,26 @@ public class Inventario {
         return cantidad;
     }
 
+    /**
+     * Busca el primer objeto cuyo nombre coincida (por ejemplo "Poción" o
+     * "Esfera") y devuelve su posición, o -1 si no hay ninguno.
+     * Se usa en Batalla para consumir un objeto real del inventario en
+     * vez de crear uno nuevo de la nada cada vez que se usa.
+     */
+    public int buscarPrimero(String nombre) {
+
+        for (int i = 0; i < cantidad; i++) {
+
+            if (objetos[i].getNombre().equals(nombre)) {
+                return i;
+            }
+
+        }
+
+        return -1;
+
+    }
+
     public void mostrarInventario() {
 
         if (cantidad == 0) {

@@ -3,6 +3,7 @@ package com.uce.programacion2.Dungeon_Crawler.Criaturas;
 import com.uce.programacion2.Dungeon_Crawler.Interfaces.Atacante;
 import com.uce.programacion2.Dungeon_Crawler.Interfaces.Capturable;
 import com.uce.programacion2.Dungeon_Crawler.Interfaces.Evolucionable;
+import com.uce.programacion2.Dungeon_Crawler.Util.Tipos;
 
 public sealed abstract class Criatura
         implements Atacante, Capturable, Evolucionable
@@ -18,6 +19,12 @@ public sealed abstract class Criatura
     private int vidaMaxima;
 
     private int ataque;
+
+    // Guarda el resultado de la ventaja/desventaja de tipo del último
+    // ataque realizado ("¡Es muy eficaz!", "No es muy eficaz..." o "").
+    // Batalla lo lee después de pedirle a la criatura que ataque para
+    // agregarlo al registro de combate.
+    protected String ultimoMensajeEfectividad = "";
 
     // Bloque de instancia
     {
@@ -65,6 +72,10 @@ public sealed abstract class Criatura
 
     public int getAtaque() {
         return ataque;
+    }
+
+    public String getUltimoMensajeEfectividad() {
+        return ultimoMensajeEfectividad;
     }
 
     // ==========================
@@ -138,7 +149,20 @@ public sealed abstract class Criatura
 
     System.out.println(getNombre() + " usa " + habilidad + ".");
 
-    enemigo.recibirDanio(getAtaque());
+    // Antes el daño era siempre igual a getAtaque(), sin importar el
+    // tipo de la criatura atacante ni el de la defensora.
+    // enemigo.recibirDanio(getAtaque());
+
+    // Ahora se aplica el multiplicador de ventaja/desventaja de tipo
+    // (ver Util.Tipos) y se guarda el mensaje de efectividad para que
+    // Batalla lo muestre en el registro de combate.
+    double multiplicador = Tipos.multiplicador(getTipo(), enemigo.getTipo());
+
+    int danio = (int) Math.round(getAtaque() * multiplicador);
+
+    enemigo.recibirDanio(danio);
+
+    ultimoMensajeEfectividad = Tipos.descripcion(multiplicador);
 
 }
 
@@ -191,5 +215,25 @@ public sealed abstract class Criatura
 
     @Override
     public abstract void evolucionar();
+
+    /**
+     * Crea una criatura nueva del mismo tipo, con las estadísticas base
+     * de fábrica (nivel 1, vida completa). Cada subclase debe devolver
+     * "new NombreDeLaClase()".
+     *
+     * Se usa para que las criaturas guardadas en el mundo (Mundo/Ruta)
+     * actúen como "plantillas": al entrar en combate se entrega una copia
+     * fresca en vez de la instancia original, así el daño de un combate
+     * no queda pegado al monstruo salvaje para siempre.
+     */
+    public abstract Criatura copiar();
+
+    /**
+     * Ejecuta la habilidad especial propia de cada criatura (más daño que
+     * un ataque normal). Cada subclase delega en su método específico
+     * (llamaFinal, tsunami, hojasAfiladas, etc.) que ya existía pero no
+     * se estaba usando desde ningún botón de la interfaz.
+     */
+    public abstract void ataqueEspecial(Criatura enemigo);
 
 }

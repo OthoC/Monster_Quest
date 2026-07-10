@@ -2,6 +2,8 @@ package com.uce.programacion2.Dungeon_Crawler.Personajes;
 
 import com.uce.programacion2.Dungeon_Crawler.Criaturas.Criatura;
 import com.uce.programacion2.Dungeon_Crawler.Objetos.Inventario;
+import com.uce.programacion2.Dungeon_Crawler.Objetos.Pocion;
+import com.uce.programacion2.Dungeon_Crawler.Objetos.Esfera;
 public class Jugador {
 
     private String nombre;
@@ -11,7 +13,7 @@ public class Jugador {
     private int dinero;
     private int victorias;
 
-    
+
 
     // Bloque de instancia
     {
@@ -20,6 +22,15 @@ public class Jugador {
         inventario = new Inventario();
         dinero = 100;
         victorias = 0;
+
+        // Ahora que las pociones y esferas se consumen de verdad al usarlas
+        // (ver Batalla.usarPocion/lanzarEsfera), el jugador necesita algunos
+        // objetos iniciales para poder jugar sin pasar primero por la tienda.
+        inventario.agregarObjeto(new Pocion());
+        inventario.agregarObjeto(new Pocion());
+        inventario.agregarObjeto(new Esfera());
+        inventario.agregarObjeto(new Esfera());
+        inventario.agregarObjeto(new Esfera());
     }
 
     public Jugador(String nombre) {
@@ -105,6 +116,23 @@ public class Jugador {
         }
 
         return null;
+
+    }
+
+    /**
+     * Cura por completo a todas las criaturas del equipo. Se llama al
+     * terminar un combate (ganado, perdido o huido) para que el jugador
+     * nunca quede "atascado" con criaturas debilitadas para siempre:
+     * antes el daño de un combate se acarreaba indefinidamente al
+     * siguiente porque Criatura.recibirDanio() nunca se revertía.
+     */
+    public void curarEquipo() {
+
+        for (int i = 0; i < cantidadCriaturas; i++) {
+
+            equipo[i].curarCompleto();
+
+        }
 
     }
 
